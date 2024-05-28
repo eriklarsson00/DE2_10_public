@@ -21,7 +21,6 @@ data_file = './5datapoints.csv'
 
 def load_data():
     dataset = pd.read_csv(data_file)
-    dataset = dataset.drop(columns=['language', 'license', 'topics'], axis=1)
     
     for col in dataset.columns:
         if dataset[col].dtype == 'object' and col != 'full_name':
@@ -85,9 +84,11 @@ def get_accuracy():
     # score = loaded_model.evaluate(X, y, verbose=0)
     # #print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
     # return score[1]*100
+    
     predictions = get_predictions()
-    y = predictions['y']
-    predicted = predictions['predicted']
+    
+    y = [record['actual'] for record in predictions['data']]
+    predicted = [record['predicted'] for record in predictions['data']]
     accuracy = r2_score(y, predicted)
     return accuracy*100
 

@@ -22,7 +22,12 @@ def load_data():
 @app.route("/")
 def index():
     dataset = load_data()
-    dataset = dataset.drop(columns=['stars', 'created_at', 'updated_at', 'pushed_at', 'language', 'license', 'topics', 'visibility', 'default_branch', 'score'], axis=1)
+    dataset = dataset.drop(columns=['stars', 'created_at', 'updated_at',
+                                    'pushed_at', 'visibility', 'default_branch',
+                                    'score', 'has_issues', 'has_projects',
+                                    'has_downloads', 'has_wiki', 'has_pages',
+                                    'has_discussions', 'archived', 'disabled',
+                                    'allow_forking', 'is_template', 'web_commit_signoff_required'], axis=1)
     records = dataset.to_dict(orient='records')
     return render_template('index.html', records=records)
 
