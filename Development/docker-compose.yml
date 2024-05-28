@@ -4,7 +4,7 @@ services:
   ray-head:
     build: .
     container_name: ray-head
-    command: ray start --head --port=6379
+    command: ["bash", "-c", "ray start --head --port=6379 && tail -f /dev/null"]
     ports:
       - "6379:6379"
     environment:
@@ -13,11 +13,11 @@ services:
     volumes:
       - .:/app
       - ./results:/app/results
+    shm_size: 2gb
 
   ray-worker:
     build: .
-    container_name: ray-worker
-    command: ray start --address=ray-head:6379
+    command: ["bash", "-c", "tail -f /dev/null"]
     environment:
       - RAY_HEAD_SERVICE_HOST=ray-head
       - RAY_HEAD_SERVICE_PORT=6379
@@ -25,3 +25,4 @@ services:
       - ray-head
     volumes:
       - .:/app
+    shm_size: 2gb

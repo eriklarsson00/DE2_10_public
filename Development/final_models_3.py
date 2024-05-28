@@ -9,9 +9,12 @@ Original file is located at
 
 #!pip install ray[tune]
 
+import os
 import csv
 import pandas as pd
 import numpy as np
+
+from datetime import datetime
 
 from sklearn.ensemble import BaggingRegressor
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, train_test_split
@@ -30,6 +33,7 @@ from ray import train, tune
 # data = pd.read_csv("repositories_main.csv")
 # data = data.drop_duplicates()
 # data.describe()
+start_time = datetime.now()
 data = pd.read_csv("repositories_main.csv")
 data = data.drop_duplicates()
 data = data.dropna().reset_index(drop=True)
@@ -146,7 +150,7 @@ best_bc.fit(X, y)
 test_predictions = best_bc.predict(X_test[:5])
 bagging_accuracy = r2_score(y_test[:5], test_predictions)
 print("Bagging Test accuracy:", bagging_accuracy)
-model_filename = f"Bagging_model.pkl"
+model_filename = f"./results/Bagging_model.pkl"
 joblib.dump(best_bc, model_filename)
 print(f"Saved Bagging model to {model_filename}")
 
@@ -161,7 +165,7 @@ best_adaboost_model.fit(pd.concat([X, X_validation]), pd.concat([y, y_validation
 test_predictions = best_adaboost_model.predict(X_test)
 adaboost_accuracy = r2_score(y_test, test_predictions)
 print("Test R2 score for AdaBoost Regressor:", adaboost_accuracy)
-model_filename = f"Adaboost_model.pkl"
+model_filename = f"./results/Adaboost_model.pkl"
 joblib.dump(best_adaboost_model, model_filename)
 print(f"Saved best adaboost model to {model_filename}")
 
@@ -176,7 +180,7 @@ best_gradboost_model.fit(pd.concat([X, X_validation]), pd.concat([y, y_validatio
 test_predictions = best_gradboost_model.predict(X_test)
 gradboost_accuracy = r2_score(y_test, test_predictions)
 print("Test R2 score for Gradient Boosting Regressor:", gradboost_accuracy)
-model_filename = f"gradboost_model.pkl"
+model_filename = f"./results/gradboost_model.pkl"
 joblib.dump(best_gradboost_model, model_filename)
 print(f"Saved best gradboost model to {model_filename}")
 
@@ -184,11 +188,12 @@ print(f"Saved best gradboost model to {model_filename}")
 # gradboost_accuracy = 0.5
 # adaboost_accuracy = 0.8
 
-with open('test_accuracy.txt', 'w') as file:
+with open(os.path.join("/app/results", f"test_accuracy.txt"), 'w') as file:
     # Write the variables into the file
     file.write(f"{bagging_accuracy} Bagging_model.pkl\n")
     file.write(f"{gradboost_accuracy} gradboost_model.pkl\n")
     file.write(f"{adaboost_accuracy} Adaboost_model.pkl\n")
 
-print("Variables have been written to test_accuracy.txt")
+print("Variables have been written to test_accuracy.txt\n")
+print("Time taken = ", datetime.now()-start_time)
 
