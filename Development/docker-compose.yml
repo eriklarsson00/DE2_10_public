@@ -17,7 +17,7 @@ services:
 
   ray-worker:
     build: .
-    command: ["bash", "-c", "tail -f /dev/null"]
+    command: ["bash", "-c", "ray start --address='172.18.0.2:6379' && tail -f /dev/null"]
     environment:
       - RAY_HEAD_SERVICE_HOST=ray-head
       - RAY_HEAD_SERVICE_PORT=6379
