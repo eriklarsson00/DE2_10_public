@@ -15,9 +15,4 @@ Tentative structure for the ease of Dockerisation:
     - Dockerfile
     - training_dataset.csv
     - requirements.txt
-    = model1
-        - model1.pkl
-    = model2
-        - model2.pkl
-    = model3
-        - model3.pkl
+    - train_models.py
