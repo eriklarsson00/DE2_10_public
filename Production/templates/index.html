@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Star Predictor</title>
+        <style>
+            h1 {
+                text-align: center;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table, th, td {
+                border: 1px solid black;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the Data Engineering 2 Project: Group 10</h1>
+        <h2>Existing Records</h2>
+        <table>
+            <thead>
+                <tr>
+                    {% for col in records[0].keys() %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                    <tr>
+                        {% for value in record.values() %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Actions</h2>
+        <form action="/accuracy" method="POST">
+            <button type="submit">Get Accuracy</button>
+        </form>
+        <form action="/predictions" method="POST">
+            <button type="submit">Get Predictions</button>
+        </form>
+
+    </body>
+</html> 

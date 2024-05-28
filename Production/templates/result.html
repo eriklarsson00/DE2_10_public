@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Star Predictor</title>
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table, th, td {
+                border: 1px solid black;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Predictions and Accuracy</h1>
+    
+        <h2>Predictions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Actual</th>
+                    <th>Predicted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in predictions.data %}
+                    <tr>
+                        <td>{{ record.full_name }}</td>
+                        <td>{{ record.actual }}</td>
+                        <td>{{ record.predicted }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2>Accuracy</h2>
+        <p id="accuracy"></p>
+        
+        <script>
+            fetch(`/accuracy_result/{{ accuracy_task_id }}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.state == 'SUCCESS') {
+                    document.getElementById('accuracy').innerText = `The accuracy is ${data.accuracy}`;
+                } else {
+                    document.getElementById('accuracy').innerText = `Task ${data.state}`;
+                }
+            });
+        </script>
+    </body>
+</html>
