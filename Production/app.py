@@ -1,5 +1,6 @@
 from workerA import add_nums, get_accuracy, get_predictions
 
+
 from flask import (
    Flask,
    request,
@@ -62,38 +63,27 @@ def index():
 @app.route("/accuracy", methods=['POST'])
 def accuracy():
     task = get_accuracy.delay()
-    return jsonify({'task_id': task.id})
-
-@app.route("/accuracy/<task_id>")
-def get_accuracy_result(task_id):
-    task = AsyncResult(task_id)
+    task.wait()  # Wait for the task to complete
     if task.state == 'SUCCESS':
-        return f'<h1>The accuracy is {task.result}</h1>'
+        return f'<h1>The accuracy is {task.result:.2f}%</h1>'
     else:
         return f'<h1>Task {task.state}</h1>'
 
 @app.route("/predictions", methods=['POST'])
 def predictions():
     task = get_predictions.delay()
-    return jsonify({'task_id': task.id})
-
-@app.route("/predictions/<task_id>")
-def get_predictions_result(task_id):
-    task = AsyncResult(task_id)
+    task.wait()  # Wait for the task to complete
     if task.state == 'SUCCESS':
         predictions = task.result
         accuracy_task = get_accuracy.delay()
-        return render_template('result.html', accuracy_task_id=accuracy_task.id, predictions=predictions)
+        accuracy_task.wait()  # Wait for the accuracy task to complete
+        if accuracy_task.state == 'SUCCESS':
+            accuracy = accuracy_task.result
+            return render_template('result.html', accuracy=accuracy, predictions=predictions)
+        else:
+            return f'<h1>Accuracy Task {accuracy_task.state}</h1>'
     else:
-        return f'<h1>Task {task.state}</h1>'
-
-@app.route("/accuracy_result/<task_id>")
-def accuracy_result(task_id):
-    task = AsyncResult(task_id)
-    if task.state == 'SUCCESS':
-        return jsonify({'accuracy': task.result})
-    else:
-        return jsonify({'state': task.state})
+        return f'<h1>Predictions Task {task.state}</h1>'
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0',port=5100,debug=True)

@@ -19,27 +19,21 @@ data_file = './5datapoints.csv'
 #     y = np.asarray(y, dtype=np.uint8)
 #     return X, y
 
-def load_data():
-    dataset = pd.read_csv(data_file)
-    
-    for col in dataset.columns:
-        if dataset[col].dtype == 'object' and col != 'full_name':
-            dataset[col] = dataset[col].astype('category').cat.codes
-            
-    target = 'stars'
-    features = dataset.columns.drop([target])
-    
-    X = dataset[features].to_numpy()
-    y = dataset[target].to_numpy()
-    
-    return X, y
-        
+dataset = pd.read_csv(data_file)
 
-def load_model():
-    # load json and create model
-    loaded_model = joblib.load(model_file)
-    #print("Loaded model from disk")
-    return loaded_model
+# for col in dataset.columns:
+#     if dataset[col].dtype == 'object' and col != 'full_name':
+#         dataset[col] = dataset[col].astype('category').cat.codes
+dataset = dataset.select_dtypes(exclude=['object'])
+        
+target = 'stars'
+features = dataset.columns.drop([target])
+
+X = dataset[features].to_numpy()
+y = dataset[target].to_numpy()
+
+# load json and create model
+loaded_model = joblib.load(model_file)
 
 # Celery configuration
 CELERY_BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbit:5672/'
@@ -54,11 +48,10 @@ def add_nums(a, b):
 @celery.task
 def get_predictions():
     results ={}
-    X, y = load_data()
-    names = X[:,0]
-    X = np.delete(X, 0, 1)
-    loaded_model = load_model()
-    predictions = np.round(loaded_model.predict(X)).flatten().astype(np.int32)
+    X_df = pd.DataFrame(X, columns=features)
+    names = X_df["full_name"]
+    X_df = X_df.drop(columns=['full_name'])
+    predictions = np.round(loaded_model.predict(X_df)).flatten().astype(np.int32)
     
     results_df = pd.DataFrame({
         'full_name': names,
@@ -67,12 +60,6 @@ def get_predictions():
     }).sort_values(by='predicted', ascending=False)
     
     results['data'] = results_df.to_dict(orient='records')
-    
-    #print ('results[y]:', results['y'])
-    # for i in range(len(results['y'])):
-        #print('%s => %d (expected %d)' % (X[i].tolist(), predictions[i], y[i]))
-        # results['predicted'].append(predictions[i].tolist()[0])
-    #print ('results:', results)
     return results
 
 @celery.task

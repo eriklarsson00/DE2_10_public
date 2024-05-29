@@ -41,18 +41,6 @@
         </table>
         
         <h2>Accuracy</h2>
-        <p id="accuracy"></p>
-        
-        <script>
-            fetch(`/accuracy_result/{{ accuracy_task_id }}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.state == 'SUCCESS') {
-                    document.getElementById('accuracy').innerText = `The accuracy is ${data.accuracy}`;
-                } else {
-                    document.getElementById('accuracy').innerText = `Task ${data.state}`;
-                }
-            });
-        </script>
+        <p>The accuracy is {{ accuracy }}%</p>
     </body>
 </html>
