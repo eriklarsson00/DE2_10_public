@@ -21,10 +21,10 @@ data_file = './5datapoints.csv'
 
 dataset = pd.read_csv(data_file)
 
-# for col in dataset.columns:
-#     if dataset[col].dtype == 'object' and col != 'full_name':
-#         dataset[col] = dataset[col].astype('category').cat.codes
-dataset = dataset.select_dtypes(exclude=['object'])
+for col in dataset.columns:
+    if dataset[col].dtype == 'object' and col != 'full_name':
+        dataset[col] = dataset[col].astype('category').cat.codes
+# dataset = dataset.select_dtypes(exclude=['object'])
         
 target = 'stars'
 features = dataset.columns.drop([target])
