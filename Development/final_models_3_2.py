@@ -9,7 +9,7 @@ Original file is located at
 
 # !pip install scikit-optimize
 # !pip install PyGithub
-# !pip install ray[tune]
+#!pip install ray[tune]
 
 # from github import Githu
 import os
@@ -55,8 +55,13 @@ from ray import train, tune
 # data = data.drop_duplicates()
 # data.describe()
 start_time = datetime.now()
-data = pd.read_csv("combined.csv")
+data = pd.read_csv("combined_3.csv")
 data = data.drop_duplicates()
+main_test = pd.read_csv("5datapoints.csv")
+drop = [i for i in main_test['full_name']]
+##Drop rows where 'full_name' is in values_to_drop
+data = data[~data['full_name'].isin(drop)]
+
 data = data.drop(columns=['language', 'license', 'topics'], axis=1)
 data = data.dropna().reset_index(drop=True)
 # List of numerical features
@@ -237,4 +242,18 @@ with open(os.path.join("/app/results", f"test_accuracy.txt"), 'w') as file:
     file.write(f"{adaboost_accuracy} Adaboost_model.pkl\n")
 
 print("Variables have been written to test_accuracy.txt")
-print("Time taken = ", datetime.now()-start_time)
+print("time taken: ", datetime.now()-start_time)
+"""
+test_data = pd.read_csv('5datapoints.csv')
+# test_data = test_data.drop(columns=['language', 'license', 'topics'], axis=1)
+test_data = test_data.select_dtypes(exclude=['object'])
+X_main_test = test_data.drop(columns=['stars'])
+y_main_test = test_data['stars']
+
+for i in ['Bagging_model.pkl', 'gradboost_model.pkl', 'Adaboost_model.pkl']:
+  model = joblib.load(i)
+  predictions = model.predict(X_main_test)
+  accuracy = r2_score(y_main_test, predictions)
+  # print(y_main_test, predictions)
+  print(f"{i} accuracy: {accuracy}")
+"""
