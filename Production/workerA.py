@@ -8,8 +8,8 @@ from sklearn.metrics import r2_score
 # from tensorflow.keras.models import model_from_json
 
 
-model_file = './best_model.pkl'
-data_file = './5datapoints.csv'
+model_file = '/app/best_model.pkl'
+data_file = '/app/5datapoints.csv'
 
 # def load_data():
 #     dataset =  loadtxt(data_file, delimiter=',')
@@ -21,10 +21,12 @@ data_file = './5datapoints.csv'
 
 dataset = pd.read_csv(data_file)
 
-for col in dataset.columns:
-    if dataset[col].dtype == 'object' and col != 'full_name':
-        dataset[col] = dataset[col].astype('category').cat.codes
-# dataset = dataset.select_dtypes(exclude=['object'])
+names = dataset["full_name"]
+
+# for col in dataset.columns:
+#     if dataset[col].dtype == 'object' and col != 'full_name':
+#         dataset[col] = dataset[col].astype('category').cat.codes
+dataset = dataset.select_dtypes(exclude=['object'])
         
 target = 'stars'
 features = dataset.columns.drop([target])
@@ -49,8 +51,6 @@ def add_nums(a, b):
 def get_predictions():
     results ={}
     X_df = pd.DataFrame(X, columns=features)
-    names = X_df["full_name"]
-    X_df = X_df.drop(columns=['full_name'])
     predictions = np.round(loaded_model.predict(X_df)).flatten().astype(np.int32)
     
     results_df = pd.DataFrame({
