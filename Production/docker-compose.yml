@@ -6,9 +6,7 @@ services:
       network: host
     restart: always
     volumes:
-      - type: bind
-        source: .
-        target: /app
+      - .:/app
     ports:
       - "5100:5100"
     depends_on:
@@ -28,9 +26,7 @@ services:
       network: host
     hostname: worker_1
     volumes:
-      - type: bind
-        source: .
-        target: /app
+      - .:/app
     entrypoint: celery
     command: -A workerA worker --loglevel=debug
     links:
