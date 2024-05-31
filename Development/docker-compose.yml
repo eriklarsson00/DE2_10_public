@@ -10,10 +10,11 @@ services:
     environment:
       - RAY_HEAD_SERVICE_HOST=ray-head
       - RAY_HEAD_SERVICE_PORT=6379
+      - RAY_USE_MULTIPROCESSING_CPU_COUNT=1
     volumes:
       - .:/app
       - ./results:/app/results
-    shm_size: 2gb
+    shm_size: 4gb 
 
   ray-worker:
     build: .
@@ -21,8 +22,10 @@ services:
     environment:
       - RAY_HEAD_SERVICE_HOST=ray-head
       - RAY_HEAD_SERVICE_PORT=6379
+      - RAY_USE_MULTIPROCESSING_CPU_COUNT=1
     depends_on:
       - ray-head
     volumes:
       - .:/app
-    shm_size: 2gb
+    shm_size: 4gb
+
